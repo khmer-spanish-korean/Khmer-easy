@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="referrer" content="no-referrer">
+  <title>크메르어 종합 퀴즈 & 실생활 대사전</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #6366f1;
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-sub: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px;
+      overflow-x: hidden;
+    }
+
+    .khmer-font { font-family: 'Kantumruy Pro', sans-serif; }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .logo-area { display: flex; align-items: center; gap: 8px; }
+    .flag-icon { font-size: 1.8rem; }
+
+    .app-title {
+      font-size: 1.22rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 6px; }
+
+    .btn-pill {
+      background: var(--card-sub);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 6px 11px;
+      border-radius: 18px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-pill:hover { background: var(--primary); border-color: var(--primary-light); }
+    .btn-pill.gold { border-color: var(--gold); color: var(--gold-light); }
+
+    .tabs-row {
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 8px 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active { background: var(--primary); color: #fff; }
+
+    /* 상단 상태창: 3열 2행 모바일 최적화 그리드 */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.45);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
+
+    .stat-item { display: flex; flex-direction: column; gap: 2px; }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); }
+    .stat-val { font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .stat-val.gold { color: var(--gold-light); }
+    .stat-val.green { color: var(--success); }
+    .stat-val.lives { font-size: 0.92rem; letter-spacing: 2px; }
+
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: #334155;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+      transition: width 0.3s ease;
+    }
+
+    .quiz-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.45);
+      position: relative;
+      transition: transform 0.15s ease;
+    }
+
+    .quiz-card.shake {
+      animation: shakeCard 0.45s cubic-bezier(.36,.07,.19,.97) both;
+      border-color: var(--danger);
+    }
+
+    @keyframes shakeCard {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    .card-meta { display: flex; justify-content: space-between; align-items: center; }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 14px;
+    }
+
+    .word-display {
+      text-align: center;
+      padding: 16px 10px;
+      background: radial-gradient(circle at center, rgba(99, 102, 241, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .khmer-word {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      line-height: 1.25;
+    }
+
+    .pronunciation-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 24px;
+    }
+
+    .pron-text { font-size: 1.15rem; font-weight: 700; color: var(--gold); }
+
+    .btn-speak-main {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+
+    .options-grid { display: flex; flex-direction: column; gap: 10px; }
+
+    .option-btn {
+      background: var(--card-sub);
+      border: 2px solid var(--border);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 15px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .option-btn:hover:not(.locked) {
+      background: #475569;
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .option-main-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .option-left { display: flex; align-items: center; gap: 12px; }
+
+    .option-num {
+      width: 26px;
+      height: 26px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .option-meaning { font-size: 1.12rem; font-weight: 600; }
+
+    .option-status-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .option-revealed-area {
+      display: none;
+      padding-top: 8px;
+      margin-top: 6px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .revealed-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .rev-word-group { display: flex; align-items: center; gap: 10px; }
+    .rev-khmer { font-size: 1.35rem; font-weight: 700; color: #ffffff; line-height: 1; }
+    .rev-pron { font-size: 0.95rem; font-weight: 600; color: var(--gold); }
+
+    .btn-opt-tts {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .option-btn.correct { background: rgba(16, 185, 129, 0.18) !important; border-color: var(--success) !important; }
+    .option-btn.correct .option-num { background: var(--success); color: #fff; }
+    .option-btn.correct .option-status-badge { display: inline-block; background: var(--success); color: #fff; }
+
+    .option-btn.wrong-chosen { background: rgba(239, 68, 68, 0.18) !important; border-color: var(--danger) !important; }
+    .option-btn.wrong-chosen .option-num { background: var(--danger); color: #fff; }
+    .option-btn.wrong-chosen .option-status-badge { display: inline-block; background: var(--danger); color: #fff; }
+
+    .option-btn.distractor { opacity: 0.85; border-color: #475569; }
+    .option-btn.locked { cursor: default; }
+
+    .feedback-bar {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border);
+      animation: slideUp 0.3s ease;
+    }
+
+    .feedback-title { font-size: 1.05rem; font-weight: 700; }
+
+    .btn-next-question {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border: none;
+      color: #fff;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+
+    .toast-popup {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--gold);
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .toast-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 900;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title { font-size: 1.08rem; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
+
+    .modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .gameover-box {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 0;
+    }
+    .gameover-icon { font-size: 3.5rem; }
+    .gameover-title { font-size: 1.5rem; font-weight: 900; color: var(--danger); }
+    .gameover-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+    .btn-restart {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .hall-hero {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(79, 70, 229, 0.15));
+      border: 1px solid var(--gold);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hall-hero-val { font-size: 2rem; font-weight: 900; color: var(--gold-light); }
+    .hall-hero-label { font-size: 0.85rem; color: #cbd5e1; }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .badge-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .badge-card.unlocked {
+      border-color: var(--gold);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .badge-icon { font-size: 1.8rem; filter: grayscale(100%); opacity: 0.35; }
+    .badge-card.unlocked .badge-icon { filter: none; opacity: 1; }
+    .badge-info { display: flex; flex-direction: column; gap: 2px; }
+    .badge-title { font-size: 0.88rem; font-weight: 700; color: #fff; }
+    .badge-desc { font-size: 0.72rem; color: var(--text-muted); }
+
+    .vocab-search-input {
+      width: 100%;
+      background: var(--card-sub);
+      border: 1px solid var(--border);
+      padding: 11px 13px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .vocab-search-input:focus { outline: none; border-color: var(--primary-light); }
+
+    .search-tags-hint {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .hint-chip {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .hint-chip:hover { color: var(--gold); border-color: var(--gold); }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 8px; }
+    .vocab-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .type-badge {
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+    }
+    .type-noun { background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #93c5fd; }
+    .type-verb { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; }
+    .type-adj { background: rgba(245, 158, 11, 0.2); border-color: #f59e0b; color: #fde68a; }
+    .type-expr { background: rgba(168, 85, 247, 0.2); border-color: #a855f7; color: #e9d5ff; }
+
+    .google-live-card {
+      background: rgba(79, 70, 229, 0.15);
+      border: 1px solid var(--primary-light);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+      margin-top: 6px;
+    }
+    .btn-google-translate {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 480px) {
+      .khmer-word { font-size: 2.3rem; }
+      .pron-text { font-size: 1.05rem; }
+      .option-meaning { font-size: 0.98rem; }
+      .badge-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="container">
+    <header>
+      <div class="header-top">
+        <div class="logo-area">
+          <span class="flag-icon">🇰🇭</span>
+          <h1 class="app-title">크메르어 종합 퀴즈 & 대사전</h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn-pill gold" id="btnOpenHall" title="명예의 전당 및 뱃지">
+            🏆 명예의 전당
+          </button>
+          <button class="btn-pill" id="btnAudioMode" title="발음 재생 모드">
+            <span id="audioModeIcon">🇰🇭</span>
+            <span id="audioModeText">원어 발음</span>
+          </button>
+          <button class="btn-pill" id="btnOpenVocab">📖 통합 사전</button>
+        </div>
+      </div>
+
+      <div class="tabs-row">
+        <button class="tab-btn active" data-mode="all">전체 믹스</button>
+        <button class="tab-btn" data-mode="verb">동사 전용</button>
+        <button class="tab-btn" data-mode="adj">형용사 전용</button>
+        <button class="tab-btn" data-mode="wrong">오답 복습 (<span id="wrongCount">0</span>)</button>
+      </div>
+
+      <!-- 상단 상태창: 실시간 정답률 완벽 표기 -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span class="stat-label">생명</span>
+          <span class="stat-val lives" id="statLives">❤️❤️❤️</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">진행도</span>
+          <span class="stat-val"><span id="statCurrent">1</span> / <span id="statTotal">1000</span></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">정답률</span>
+          <span class="stat-val gold" id="statRate">0%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">정답/풀이</span>
+          <span class="stat-val green"><span id="statCorrect">0</span> / <span id="statSolved">0</span></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">최고 연속</span>
+          <span class="stat-val gold">👑 <span id="statBestCombo">0</span></span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">현재 연속</span>
+          <span class="stat-val gold">🔥 <span id="statCombo">0</span></span>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </header>
+
+    <main class="quiz-card" id="quizCard">
+      <div class="card-meta">
+        <span class="category-badge" id="badgeCategory">동사 (Verb)</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">단축키 [1][2][3][4] 풀기 | [Space] 다음</span>
+      </div>
+
+      <div class="word-display">
+        <div class="khmer-word khmer-font" id="displayKhmer">ញ៉ាំ</div>
+        <div class="pronunciation-box">
+          <span class="pron-text" id="displayPron">[냠]</span>
+          <button class="btn-speak-main" id="btnMainSpeak" title="발음 듣기">🔊</button>
+        </div>
+      </div>
+
+      <div class="options-grid" id="optionsContainer"></div>
+
+      <div class="feedback-bar" id="feedbackBar">
+        <div class="feedback-title" id="feedbackTitle"></div>
+        <button class="btn-next-question" id="btnNext">
+          다음 문제로 이동 ➔ (Enter / Space)
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- 💀 게임 오버 모달 -->
+  <div class="modal-overlay" id="gameOverModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--danger);">💀 게임 오버 (Game Over)</h3>
+      </div>
+      <div class="modal-body">
+        <div class="gameover-box">
+          <div class="gameover-icon">💔</div>
+          <div class="gameover-title">생명을 모두 소진했습니다!</div>
+          <div class="gameover-desc">
+            3번의 기회가 모두 끝났습니다.<br>
+            이번 도전 맞힌 문제: <strong id="goScore" style="color:#fff;">0</strong>개<br>
+            달성한 최고 콤보: <strong id="goCombo" style="color:var(--gold-light);">0</strong>회
+          </div>
+          <button class="btn-restart" id="btnRestart">🔄 생명 충전하고 다시 도전하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🏆 명예의 전당 모달 -->
+  <div class="modal-overlay" id="hallModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">🏆 명예의 전당 (Hall of Fame)</h3>
+        <button class="modal-close" id="btnCloseHall">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="hall-hero">
+          <span class="hall-hero-val" id="hallBestRecord">0회</span>
+          <span class="hall-hero-label">역대 최고 연속 정답 신기록 (Best Streak)</span>
+        </div>
+
+        <div style="font-size: 0.9rem; font-weight: 700; margin-top: 6px;">🎖️ 도전 과제 & 칭호 뱃지</div>
+        <div class="badge-grid" id="badgeGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📖 통합 사전 모달 -->
+  <div class="modal-overlay" id="vocabModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">📖 실생활 크메르어 대사전 (<span id="totalDictCount">0</span>단어)</h3>
+        <button class="modal-close" id="btnCloseVocab">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="search-filter-box">
+          <input type="text" class="vocab-search-input" id="vocabSearch" placeholder="한국어 뜻(갈아입다, 타다, 깎다), 발음, 크메르어 검색...">
+          <div class="search-tags-hint">
+            <span>빠른 태그:</span>
+            <span class="hint-chip" onclick="quickSearch('숫자')">#숫자(20~100)</span>
+            <span class="hint-chip" onclick="quickSearch('식사')">#식사/요리</span>
+            <span class="hint-chip" onclick="quickSearch('교통')">#교통/길찾기</span>
+            <span class="hint-chip" onclick="quickSearch('호텔')">#호텔/숙소</span>
+            <span class="hint-chip" onclick="quickSearch('성격')">#성격/감정</span>
+            <span class="hint-chip" onclick="quickSearch('병원')">#병원/치료</span>
+          </div>
+        </div>
+        <div class="vocab-list" id="vocabList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-popup" id="toastPopup">
+    <span id="toastMsg">알림 메시지</span>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. 퀴즈 출제용 순수 원형 동사·형용사 (300+개)
+       ========================================================================== */
+    const RAW_VOCAB = [
+      // === [순수 원형 동사군 180여개] ===
+      { khmer: "ញ៉ាំ", pron: "냠", meaning: "먹다", type: "동사" },
+      { khmer: "ហូប", pron: "호웁", meaning: "식사하다", type: "동사" },
+      { khmer: "ពិសា", pron: "피싸", meaning: "드시다", type: "동사" },
+      { khmer: "ផឹក", pron: "팍", meaning: "마시다", type: "동사" },
+      { khmer: "ទៅ", pron: "떠으", meaning: "가다", type: "동사" },
+      { khmer: "មក", pron: "모옥", meaning: "오다", type: "동사" },
+      { khmer: "ធ្វើ", pron: "트워", meaning: "하다 / 만들다", type: "동사" },
+      { khmer: "មើល", pron: "머얼", meaning: "보다 / 구경하다", type: "동사" },
+      { khmer: "ស្ដាប់", pron: "스답", meaning: "듣다", type: "동사" },
+      { khmer: "និយាយ", pron: "니이지이", meaning: "말하다", type: "동사" },
+      { khmer: "អាន", pron: "안", meaning: "읽다", type: "동사" },
+      { khmer: "សរសេរ", pron: "써쎄", meaning: "쓰다", type: "동사" },
+      { khmer: "គេង", pron: "껭", meaning: "자다", type: "동사" },
+      { khmer: "ដេក", pron: "덱", meaning: "눕다", type: "동사" },
+      { khmer: "ភ្ញាក់", pron: "프냑", meaning: "깨어나다", type: "동사" },
+      { khmer: "ដើរ", pron: "다으", meaning: "걷다", type: "동사" },
+      { khmer: "រត់", pron: "로옷", meaning: "달리다", type: "동사" },
+      { khmer: "អង្គុយ", pron: "앙꼬이", meaning: "앉다", type: "동사" },
+      { khmer: "ឈរ", pron: "초오", meaning: "서다", type: "동사" },
+      { khmer: "ជួប", pron: "쭈웁", meaning: "만나다", type: "동사" },
+      { khmer: "ស្រឡាញ់", pron: "스라라안", meaning: "사랑하다", type: "동사" },
+      { khmer: "ចូលចិត្ត", pron: "쪼올쩟", meaning: "좋아하다", type: "동사" },
+      { khmer: "ស្អប់", pron: "스옵", meaning: "싫어하다", type: "동사" },
+      { khmer: "ដឹង", pron: "등", meaning: "알다 (사실)", type: "동사" },
+      { khmer: "ស្គាល់", pron: "스꼬알", meaning: "알다 (사람)", type: "동사" },
+      { khmer: "យល់", pron: "욜", meaning: "이해하다", type: "동사" },
+      { khmer: "ចង់", pron: "쩡", meaning: "원하다", type: "동사" },
+      { khmer: "ទិញ", pron: "띤", meaning: "사다", type: "동사" },
+      { khmer: "លក់", pron: "루억", meaning: "팔다", type: "동사" },
+      { khmer: "ឱ្យ", pron: "오이", meaning: "주다", type: "동사" },
+      { khmer: "យក", pron: "요옥", meaning: "가지다", type: "동사" },
+      { khmer: "រៀន", pron: "리언", meaning: "배우다", type: "동사" },
+      { khmer: "បង្រៀន", pron: "방리언", meaning: "가르치다", type: "동사" },
+      { khmer: "ធ្វើការ", pron: "트워까", meaning: "일하다", type: "동사" },
+      { khmer: "សម្រាក", pron: "썸락", meaning: "쉬다", type: "동사" },
+      { khmer: "ជិះ", pron: "찌", meaning: "타다", type: "동사" },
+      { khmer: "បើក", pron: "바억", meaning: "열다", type: "동사" },
+      { khmer: "បិទ", pron: "벗", meaning: "닫다", type: "동사" },
+      { khmer: "ភ្លេច", pron: "플렛", meaning: "잊다", type: "동사" },
+      { khmer: "ចាំ", pron: "짬", meaning: "기억하다", type: "동사" },
+      { khmer: "ជួយ", pron: "쭈오이", meaning: "돕다", type: "동사" },
+      { khmer: "សួរ", pron: "쑤어", meaning: "묻다", type: "동사" },
+      { khmer: "ឆ្លើយ", pron: "츨라어이", meaning: "대답하다", type: "동사" },
+      { khmer: "គិត", pron: "끗", meaning: "생각하다", type: "동사" },
+      { khmer: "សើច", pron: "싸엇", meaning: "웃다", type: "동사" },
+      { khmer: "យំ", pron: "윰", meaning: "울다", type: "동사" },
+      { khmer: "ឈប់", pron: "촛", meaning: "멈추다", type: "동사" },
+      { khmer: "ចាប់ផ្តើម", pron: "짭프다엄", meaning: "시작하다", type: "동사" },
+      { khmer: "បញ្ចប់", pron: "반짭", meaning: "끝내다", type: "동사" },
+      { khmer: "ហែលទឹក", pron: "하앨뜩", meaning: "수영하다", type: "동사" },
+      { khmer: "ច្រៀង", pron: "찌엉", meaning: "노래하다", type: "동사" },
+      { khmer: "រាំ", pron: "롬", meaning: "춤추다", type: "동사" },
+      { khmer: "លាង", pron: "리엉", meaning: "씻다", type: "동사" },
+      { khmer: "ងូតទឹក", pron: "응웃뜩", meaning: "목욕하다", type: "동사" },
+      { khmer: "ចម្អិន", pron: "쩜언", meaning: "요리하다", type: "동사" },
+      { khmer: "សម្អាត", pron: "썸앗", meaning: "청소하다", type: "동사" },
+      { khmer: "ផ្ញើ", pron: "프냐어", meaning: "보내다", type: "동사" },
+      { khmer: "ទទួល", pron: "떠뚜얼", meaning: "받다", type: "동사" },
+      { khmer: "បាត់", pron: "빳", meaning: "잃어버리다", type: "동사" },
+      { khmer: "រក", pron: "러옥", meaning: "찾다", type: "동사" },
+      { khmer: "ឈ្នះ", pron: "츠네아", meaning: "이기다", type: "동사" },
+      { khmer: "ចាញ់", pron: "짜안", meaning: "지다", type: "동사" },
+      { khmer: "ជ្រើសរើស", pron: "찌러으러어", meaning: "선택하다", type: "동사" },
+      { khmer: "សង្ឃឹម", pron: "쌍큼", meaning: "희망하다", type: "동사" },
+      { khmer: "ខ្លាច", pron: "클라앗", meaning: "무서워하다", type: "동사" },
+      { khmer: "ខឹង", pron: "컹", meaning: "화내다", type: "동사" },
+      { khmer: "ខ្ចី", pron: "크쩌이", meaning: "빌리다", type: "동사" },
+      { khmer: "សង", pron: "썽", meaning: "갚다", type: "동사" },
+      { khmer: "ហោះ", pron: "하어", meaning: "날다", type: "동사" },
+      { khmer: "ធ្លាក់", pron: "틀략", meaning: "떨어지다", type: "동사" },
+      { khmer: "កើត", pron: "까엇", meaning: "태어나다", type: "동사" },
+      { khmer: "ស្លាប់", pron: "슬랍", meaning: "죽다", type: "동사" },
+      { khmer: "ជឿ", pron: "쯔어", meaning: "믿다", type: "동사" },
+      { khmer: "សុំទោស", pron: "쏨또오", meaning: "사과하다", type: "동사" },
+      { khmer: "អរគុណ", pron: "어꾼", meaning: "감사하다", type: "동사" },
+      { khmer: "ហៅ", pron: "하오", meaning: "부르다", type: "동사" },
+      { khmer: "ប្រាប់", pron: "쁘랍", meaning: "말해주다", type: "동사" },
+      { khmer: "តាម", pron: "따암", meaning: "따르다", type: "동사" },
+      { khmer: "បោះ", pron: "바어", meaning: "던지다", type: "동사" },
+      { khmer: "ចាប់", pron: "짭", meaning: "잡다", type: "동사" },
+      { khmer: "ពាក់", pron: "뺰", meaning: "입다", type: "동사" },
+      { khmer: "ដោះ", pron: "다어", meaning: "벗다", type: "동사" },
+      { khmer: "កាត់", pron: "깟", meaning: "자르다", type: "동사" },
+      { khmer: "ដាំ", pron: "덤", meaning: "심다", type: "동사" },
+      { khmer: "សន្យា", pron: "썬냐", meaning: "약속하다", type: "동사" },
+      { khmer: "យល់ព្រម", pron: "욜프롬", meaning: "동의하다", type: "동사" },
+      { khmer: "លោត", pron: "로옫", meaning: "뛰다", type: "동사" },
+      { khmer: "រង់ចាំ", pron: "롱짬", meaning: "기다리다", type: "동사" },
+      { khmer: "ជួសជុល", pron: "쭈어쭈얼", meaning: "수리하다", type: "동사" },
+      { khmer: "ផ្លាស់ប្តូរ", pron: "플라바도", meaning: "바꾸다", type: "동사" },
+      { khmer: "កក់", pron: "꺽", meaning: "예약하다", type: "동사" },
+      { khmer: "មកដល់", pron: "모옥덜", meaning: "도착하다", type: "동사" },
+      { khmer: "ចាកចេញ", pron: "짜악쩬", meaning: "출발하다", type: "동사" },
+      { khmer: "ជូត", pron: "쪼옫", meaning: "닦다", type: "동사" },
+      { khmer: "បោស", pron: "바오", meaning: "쓸다", type: "동사" },
+      { khmer: "ហាត់ប្រាណ", pron: "핟쁘라안", meaning: "운동하다", type: "동사" },
+      { khmer: "ចូល", pron: "쪼올", meaning: "들어가다", type: "동사" },
+      { khmer: "ចេញ", pron: "쩬", meaning: "나가다", type: "동사" },
+      { khmer: "ឡើង", pron: "라응", meaning: "올라가다", type: "동사" },
+      { khmer: "ចុះ", pron: "쪼", meaning: "내려가다", type: "동사" },
+      { khmer: "ទាញ", pron: "띠언", meaning: "당기다", type: "동사" },
+      { khmer: "រុញ", pron: "론", meaning: "밀다", type: "동사" },
+      { khmer: "លើក", pron: "르억", meaning: "들다", type: "동사" },
+      { khmer: "ដាក់", pron: "다악", meaning: "놓다", type: "동사" },
+      { khmer: "ចាក់សោ", pron: "짜악싸오", meaning: "잠그다", type: "동사" },
+      { khmer: "បារម្ភ", pron: "바롬", meaning: "걱정하다", type: "동사" },
+      { khmer: "ឈ្លោះ", pron: "츠루어", meaning: "다투다", type: "동사" },
+      { khmer: "ផ្លាស់សម្លៀកបំពាក់", pron: "플라 썸리억범뺰", meaning: "옷을 갈아입다", type: "동사" },
+      { khmer: "ជិះឡាន", pron: "찌 란", meaning: "차를 타다", type: "동사" },
+      { khmer: "ចុះពីឡាន", pron: "쪼 삐 란", meaning: "차에서 내리다", type: "동사" },
+      { khmer: "បើកបរ", pron: "바억 버", meaning: "운전하다", type: "동사" },
+      { khmer: "ដុសធ្មេញ", pron: "도 트멘", meaning: "양치하다", type: "동사" },
+      { khmer: "លុបមុខ", pron: "롭 목", meaning: "세수하다", type: "동사" },
+      { khmer: "សិតសក់", pron: "쌛 쏙", meaning: "머리를 빗다", type: "동사" },
+      { khmer: "សម្ងួតសក់", pron: "썸응ួត 쏙", meaning: "머리를 말리다", type: "동사" },
+      { khmer: "កោរពុកចង្កា", pron: "까오 똑쩡까", meaning: "면도하다", type: "동사" },
+      { khmer: "កាត់ក្រចក", pron: "깟 끄러쩍", meaning: "손톱을 깎다", type: "동사" },
+      { khmer: "បើកភ្លើង", pron: "바억 플릉", meaning: "불을 켜다", type: "동사" },
+      { khmer: "បិទភ្លើង", pron: "벗 플릉", meaning: "불을 끄다", type: "동사" },
+      { khmer: "ចាក់សោទ្វារ", pron: "짜악싸오 뜨위어", meaning: "문을 잠그다", type: "동사" },
+      { khmer: "រៀបចំឥវ៉ាន់", pron: "리어쩜 어이완", meaning: "짐을 싸다", type: "동사" },
+      { khmer: "រើឥវ៉ាន់", pron: "러 어이완", meaning: "짐을 풀다", type: "동사" },
+      { khmer: "បោកខោអាវ", pron: "바옥 카오아오", meaning: "빨래하다", type: "동사" },
+      { khmer: "ហាលខោអាវ", pron: "할 카오아오", meaning: "빨래를 널다", type: "동사" },
+      { khmer: "អ៊ុតខោអាវ", pron: "욷 카오아오", meaning: "다림질하다", type: "동사" },
+      { khmer: "បោសផ្ទះ", pron: "바오 프떼어", meaning: "방을 쓸다", type: "동사" },
+      { khmer: "ជូតផ្ទះ", pron: "쪼옫 프떼어", meaning: "걸레질하다", type: "동사" },
+      { khmer: "ចាក់សំរាម", pron: "짜악 썸람", meaning: "쓰레기를 버리다", type: "동사" },
+      { khmer: "លាងចាន", pron: "리엉 짠", meaning: "설거지하다", type: "동사" },
+      { khmer: "សាកថ្ម", pron: "싸악 트머", meaning: "충전하다", type: "동사" },
+      { khmer: "គិតលុយ", pron: "끗 루이", meaning: "계산하다", type: "동사" },
+      { khmer: "ខ្ចប់យកទៅ", pron: "크쩝 요옥 떠으", meaning: "포장해 가다", type: "동사" },
+      { khmer: "ភ្លក់", pron: "플루억", meaning: "간을 보다", type: "동사" },
+      { khmer: "ឆា", pron: "차", meaning: "볶다", type: "동사" },
+      { khmer: "បំពង", pron: "봄뽕", meaning: "튀기다", type: "동사" },
+      { khmer: "ស្ងោរ", pron: "스응아오", meaning: "삶다", type: "동사" },
+      { khmer: "ស្ល", pron: "슬러", meaning: "국을 끓이다", type: "동사" },
+      { khmer: "អាំង", pron: "앙", meaning: "굽다", type: "동사" },
+      { khmer: "ហាន់", pron: "한", meaning: "썰다", type: "동사" },
+      { khmer: "ចុះថ្លៃ", pron: "쪼 틀라이", meaning: "가격을 깎다", type: "동사" },
+      { khmer: "ដូរលុយ", pron: "도 루이", meaning: "환전하다", type: "동사" },
+      { khmer: "ឆ្លងផ្លូវ", pron: "츨랑 플러우", meaning: "길을 건너다", type: "동사" },
+      { khmer: "បត់ឆ្វេង", pron: "벗 츠웨잉", meaning: "좌회전하다", type: "동사" },
+      { khmer: "បត់ស្តាំ", pron: "벗 스담", meaning: "우회전하다", type: "동사" },
+      { khmer: "ចតឡាន", pron: "쩌앗 란", meaning: "주차하다", type: "동사" },
+      { khmer: "តេទៅ", pron: "떼 떠으", meaning: "전화를 걸다", type: "동사" },
+      { khmer: "លើកទូរស័ព្ទ", pron: "르억 뚜어쌉", meaning: "전화를 받다", type: "동사" },
+      { khmer: "លេបថ្នាំ", pron: "레입 크남", meaning: "약을 먹다", type: "동사" },
+      { khmer: "ចាក់ថ្នាំ", pron: "짜악 크남", meaning: "주사를 맞다", type: "동사" },
+      { khmer: "កុម្ម៉ង់", pron: "꼼멍", meaning: "주문하다", type: "동사" },
+      { khmer: "តម្រង់ជួរ", pron: "따오므롱 쭈어", meaning: "줄을 서다", type: "동사" },
+      { khmer: "សាកពាក់", pron: "싸악 뺰", meaning: "입어보다", type: "동사" },
+      { khmer: "សាកជើង", pron: "싸악 쯩", meaning: "신어보다", type: "동사" },
+      { khmer: "ប្តូរ", pron: "프도", meaning: "교환하다", type: "동사" },
+      { khmer: "វង្វេងផ្លូវ", pron: "웡웨잉 플러우", meaning: "길을 잃다", type: "동사" },
+      { khmer: "សួរផ្លូវ", pron: "쑤어 플러우", meaning: "길을 묻다", type: "동사" },
+      { khmer: "ណាត់ជួប", pron: "냗 쭈웁", meaning: "약속을 잡다", type: "동사" },
+      { khmer: "ផ្ញើសារ", pron: "프냐어 싸", meaning: "문자를 보내다", type: "동사" },
+      { khmer: "ទៅទទួល", pron: "떠으 떠뚜얼", meaning: "마중 나가다", type: "동사" },
+      { khmer: "ជូនដំណើរ", pron: "쭌 덤나어", meaning: "배웅하다", type: "동사" },
+      { khmer: "សរសើរ", pron: "써싸어", meaning: "칭찬하다", type: "동사" },
+      { khmer: "សម្រុះសម្រួល", pron: "썸로 썸루얼", meaning: "화해하다", type: "동사" },
+      { khmer: "ចេញឈាម", pron: "쩬 치엄", meaning: "피가 나다", type: "동사" },
+      { khmer: "ជា", pron: "찌어", meaning: "병이 낫다", type: "동사" },
+      { khmer: "ចុះកិច្ចសន្យា", pron: "쪼 겍썬냐", meaning: "계약하다", type: "동사" },
+      { khmer: "ស៊ីញ៉េ", pron: "씨녜", meaning: "서명하다", type: "동사" },
+      { khmer: "បើកប្រាក់ខែ", pron: "바억 쁘락카에", meaning: "월급을 받다", type: "동사" },
+      { khmer: "ថែមម៉ោង", pron: "타엠 마옹", meaning: "야근하다", type: "동사" },
+      { khmer: "ឈប់សម្រាក", pron: "촛 썸락", meaning: "휴가 내다", type: "동사" },
+
+      // === [순수 원형 형용사군 120여개] ===
+      { khmer: "ធំ", pron: "톰", meaning: "크다", type: "형용사" },
+      { khmer: "តូច", pron: "또오이", meaning: "작다", type: "형용사" },
+      { khmer: "ខ្ពស់", pron: "크뿌어", meaning: "높다", type: "형용사" },
+      { khmer: "ទាប", pron: "티어프", meaning: "낮다", type: "형용사" },
+      { khmer: "វែង", pron: "왜앙", meaning: "길다", type: "형용사" },
+      { khmer: "ខ្លី", pron: "클라이", meaning: "짧다", type: "형용사" },
+      { khmer: "ធាត់", pron: "토앗", meaning: "뚱뚱하다", type: "형용사" },
+      { khmer: "ស្គម", pron: "스꼼", meaning: "마르다", type: "형용사" },
+      { khmer: "ស្អាត", pron: "스앗", meaning: "예쁘다 / 깨끗하다", type: "형용사" },
+      { khmer: "អាក្រក់", pron: "아끄럭", meaning: "나쁘다 / 못생기다", type: "형용사" },
+      { khmer: "ល្អ", pron: "러어", meaning: "좋다", type: "형용사" },
+      { khmer: "ចាស់", pron: "짜아", meaning: "오래되다 / 늙다", type: "형용사" },
+      { khmer: "ក្មេង", pron: "크멩", meaning: "젊다", type: "형용사" },
+      { khmer: "ថ្មី", pron: "트머이", meaning: "새롭다", type: "형용사" },
+      { khmer: "ច្រើន", pron: "찌라언", meaning: "많다", type: "형용사" },
+      { khmer: "តិច", pron: "땍", meaning: "적다", type: "형용사" },
+      { khmer: "ក្តៅ", pron: "끄다오", meaning: "덥다 / 뜨겁다", type: "형용사" },
+      { khmer: "ត្រជាក់", pron: "뜨러찌억", meaning: "춥다 / 차갑다", type: "형용사" },
+      { khmer: "ឆ្ងាញ់", pron: "츠안", meaning: "맛있다", type: "형용사" },
+      { khmer: "ថ្លៃ", pron: "틀라이", meaning: "비싸다", type: "형용사" },
+      { khmer: "ថោក", pron: "타옥", meaning: "싸다 / 저렴하다", type: "형용사" },
+      { khmer: "ឆ្ងាយ", pron: "츠응아이", meaning: "멀다", type: "형용사" },
+      { khmer: "ជិត", pron: "찟", meaning: "가깝다", type: "형용사" },
+      { khmer: "លឿន", pron: "르언", meaning: "빠르다", type: "형용사" },
+      { khmer: "យឺត", pron: "이엇", meaning: "느리다", type: "형용사" },
+      { khmer: "ងាយ", pron: "응이어이", meaning: "쉽다", type: "형용사" },
+      { khmer: "ពិបាក", pron: "피바악", meaning: "어렵다", type: "형용사" },
+      { khmer: "ធ្ងន់", pron: "트응온", meaning: "무겁다", type: "형용사" },
+      { khmer: "ស្រាល", pron: "스라알", meaning: "가볍다", type: "형용사" },
+      { khmer: "ក្រាស់", pron: "끄라아", meaning: "두껍다", type: "형용사" },
+      { khmer: "ស្តើង", pron: "스따엉", meaning: "얇다", type: "형용사" },
+      { khmer: "ខ្លាំង", pron: "클랑", meaning: "강하다 / 세다", type: "형용사" },
+      { khmer: "ខ្សោយ", pron: "크싸오이", meaning: "약하다", type: "형용사" },
+      { khmer: "ឆ្លាត", pron: "츠랃", meaning: "똑똑하다", type: "형용사" },
+      { khmer: "ល្ងង់", pron: "릉옹", meaning: "어리석다", type: "형용사" },
+      { khmer: "មាន", pron: "미언", meaning: "부유하다", type: "형용사" },
+      { khmer: "ក្រ", pron: "끄러", meaning: "가난하다", type: "형용사" },
+      { khmer: "ផ្អែម", pron: "프아엠", meaning: "달콤하다", type: "형용사" },
+      { khmer: "ជូរ", pron: "쭈우", meaning: "시다", type: "형용사" },
+      { khmer: "ហឹរ", pron: "허", meaning: "맵다", type: "형용사" },
+      { khmer: "ប្រៃ", pron: "프라이", meaning: "짜다", type: "형용사" },
+      { khmer: "ល្វីង", pron: "르윙", meaning: "쓰다", type: "형용사" },
+      { khmer: "សាប", pron: "싸압", meaning: "싱겁다", type: "형용사" },
+      { khmer: "ស្រួយ", pron: "스루오이", meaning: "바삭하다", type: "형용사" },
+      { khmer: "ស្វិត", pron: "스웓", meaning: "질기다", type: "형용사" },
+      { khmer: "ស្អិត", pron: "스읃", meaning: "끈적거리다", type: "형용사" },
+      { khmer: "រអិល", pron: "러얼", meaning: "미끄럽다", type: "형용사" },
+      { khmer: "ទន់", pron: "똔", meaning: "부드럽다", type: "형용사" },
+      { khmer: "រឹង", pron: "렁", meaning: "단단하다", type: "형용사" },
+      { khmer: "ស្រស់", pron: "스러오", meaning: "신선하다", type: "형용사" },
+      { khmer: "ក្រអូប", pron: "끄러오웁", meaning: "향기롭다", type: "형용사" },
+      { khmer: "ស្អុយ", pron: "스오이", meaning: "악취나다", type: "형용사" },
+      { khmer: "ស្មោះត្រង់", pron: "스모 뜨렁", meaning: "솔직하다", type: "형용사" },
+      { khmer: "រួសរាយ", pron: "루어리어이", meaning: "친절하다", type: "형용사" },
+      { khmer: "ហ្មត់ចត់", pron: "못쩓", meaning: "꼼꼼하다", type: "형용사" },
+      { khmer: "ចិត្តល្អ", pron: "쩟 러어", meaning: "착하다", type: "형용사" },
+      { khmer: "កាច", pron: "까앗", meaning: "사납다 / 무섭다", type: "형용사" },
+      { khmer: "ស្លូត", pron: "슬로옫", meaning: "온순하다", type: "형용사" },
+      { khmer: "ក្លាហាន", pron: "클라한", meaning: "용감하다", type: "형용사" },
+      { khmer: "អៀន", pron: "이언", meaning: "수줍다", type: "형용사" },
+      { khmer: "សប្បាយ", pron: "싸바이", meaning: "기쁘다", type: "형용사" },
+      { khmer: "ពិបាកចិត្ត", pron: "피바악쩟", meaning: "슬프다", type: "형용사" },
+      { khmer: "រវល់", pron: "러월", meaning: "바쁘다", type: "형용사" },
+      { khmer: "ទំនេរ", pron: "뚬네", meaning: "한가하다", type: "형용사" },
+      { khmer: "ស្ងប់ស្ងាត់", pron: "스응옵스응앗", meaning: "조용하다", type: "형용사" },
+      { khmer: "ស្រួល", pron: "스루얼", meaning: "편하다", type: "형용사" },
+      { khmer: "កក់ក្តៅ", pron: "꺽끄다오", meaning: "따뜻하다", type: "형용사" },
+      { khmer: "ស្អាតបាត", pron: "스앗빧", meaning: "단정하다", type: "형용사" },
+      { khmer: "កខ្វក់", pron: "꺼쿼억", meaning: "더럽다", type: "형용사" },
+      { khmer: "ជ្រៅ", pron: "찌러우", meaning: "깊다", type: "형용사" },
+      { khmer: "រាក់", pron: "략", meaning: "얕다", type: "형용사" },
+      { khmer: "ទូលាយ", pron: "툴리어이", meaning: "넓다", type: "형용사" },
+      { khmer: "ចង្អៀត", pron: "쩡이엇", meaning: "좁다", type: "형용사" },
+      { khmer: "ត្រឹមត្រូវ", pron: "뜨럼뜨러우", meaning: "정확하다", type: "형용사" },
+      { khmer: "ខុស", pron: "코오", meaning: "틀리다", type: "형용사" },
+      { khmer: "ភ្លឺ", pron: "플르", meaning: "밝다", type: "형용사" },
+      { khmer: "ងងឹត", pron: "응응엇", meaning: "어둡다", type: "형용사" },
+      { khmer: "ស្ងួត", pron: "스응우엇", meaning: "건조하다", type: "형용사" },
+      { khmer: "សើម", pron: "싸엄", meaning: "축축하다", type: "형용사" },
+      { khmer: "ឃ្លាន", pron: "클리언", meaning: "배고프다", type: "형용사" },
+      { khmer: "ឆ្អែត", pron: "츠아엣", meaning: "배부르다", type: "형용사" },
+      { khmer: "ស្រេក", pron: "스라엑", meaning: "목마르다", type: "형용사" },
+      { khmer: "ហត់", pron: "혿", meaning: "피곤하다", type: "형용사" },
+      { khmer: "ងងុយ", pron: "응어응오이", meaning: "졸리다", type: "형용사" },
+      { khmer: "រលោង", pron: "러롱", meaning: "매끄럽다", type: "형용사" },
+      { khmer: "គគ្រើម", pron: "꼬끄라엄", meaning: "거칠다", type: "형용사" },
+      { khmer: "ត្រជាក់ស្រួល", pron: "뜨러찌억 스루얼", meaning: "시원하다", type: "형용사" },
+      { khmer: "ស្អុះស្អាប់", pron: "스오 스압", meaning: "후텁지근하다", type: "형용사" },
+      { khmer: "ខ្ជីខ្ជា", pron: "크찌크찌어", meaning: "부주의하다", type: "형용사" },
+      { khmer: "កំណាញ់", pron: "껌나안", meaning: "인색하다", type: "형용사" },
+      { khmer: "ចិត្តទូលាយ", pron: "쩟 툴리어이", meaning: "너그럽다", type: "형용사" },
+      { khmer: "អត់ធ្មត់", pron: "엇 트멋", meaning: "참을성 있다", type: "형용사" },
+      { khmer: "កំសាក", pron: "껌싸악", meaning: "겁이 많다", type: "형용사" },
+      { khmer: "ភ័យ", pron: "파이", meaning: "불안하다", type: "형용사" },
+      { khmer: "ធូរចិត្ត", pron: "투 쩟", meaning: "안심되다", type: "형용사" },
+      { khmer: "មូល", pron: "무얼", meaning: "동그랗다", type: "형용사" },
+      { khmer: "ជ្រុង", pron: "찌롱", meaning: "네모나다", type: "형용사" },
+      { khmer: "ត្រង់", pron: "뜨렁", meaning: "곧다", type: "형용사" },
+      { khmer: "កោង", pron: "까옹", meaning: "구부러지다", type: "형용사" },
+      { khmer: "ទំនើប", pron: "뚬너업", meaning: "세련되다", type: "형용사" },
+      { khmer: "បុរាណ", pron: "보란", meaning: "고풍스럽다", type: "형용사" },
+      { khmer: "ថ្លៃថ្នូរ", pron: "틀라이 트노", meaning: "고급스럽다", type: "형용사" }
+    ];
+
+    /* ==========================================================================
+       ★ 실생활 대사전 전용 DB (숫자 10단위, 호텔, 음식, 자연, 사물 450+개)
+       ========================================================================== */
+    const EXTRA_DICTIONARY_WORDS = [
+      { khmer: "មួយ", pron: "믕 (무이)", meaning: "1 (하나)", type: "숫자" },
+      { khmer: "ពីរ", pron: "삐", meaning: "2 (둘)", type: "숫자" },
+      { khmer: "បី", pron: "바이", meaning: "3 (셋)", type: "숫자" },
+      { khmer: "បួន", pron: "부온", meaning: "4 (넷)", type: "숫자" },
+      { khmer: "ប្រាំ", pron: "쁘람", meaning: "5 (다섯)", type: "숫자" },
+      { khmer: "ប្រាំមួយ", pron: "쁘람믕", meaning: "6 (여섯)", type: "숫자" },
+      { khmer: "ប្រាំពីរ", pron: "쁘람삐", meaning: "7 (일곱)", type: "숫자" },
+      { khmer: "ប្រាំបី", pron: "쁘람바이", meaning: "8 (여덟)", type: "숫자" },
+      { khmer: "ប្រាំបួន", pron: "쁘람부온", meaning: "9 (아홉)", type: "숫자" },
+      { khmer: "ដប់", pron: "덥", meaning: "10 (열)", type: "숫자" },
+      { khmer: "ម្ភៃ", pron: "머파이", meaning: "20 (스물 / 이십)", type: "숫자" },
+      { khmer: "សាមសិប", pron: "삼썹", meaning: "30 (서른 / 삼십)", type: "숫자" },
+      { khmer: "សែសិប", pron: "싸에썹", meaning: "40 (마흔 / 사십)", type: "숫자" },
+      { khmer: "ហាសិប", pron: "하썹", meaning: "50 (쉰 / 오십)", type: "숫자" },
+      { khmer: "ហុកសិប", pron: "혹썹", meaning: "60 (예순 / 육십)", type: "숫자" },
+      { khmer: "ចិតសិប", pron: "쩟썹", meaning: "70 (일흔 / 칠십)", type: "숫자" },
+      { khmer: "ប៉ែតសិប", pron: "빠엣썹", meaning: "80 (여든 / 팔십)", type: "숫자" },
+      { khmer: "កៅសិប", pron: "까우썹", meaning: "90 (아흔 / 구십)", type: "숫자" },
+      { khmer: "មួយរយ", pron: "믕러이 (러이)", meaning: "100 (백 / 일백)", type: "숫자" },
+      { khmer: "មួយពាន់", pron: "믕뽀안", meaning: "1,000 (천)", type: "숫자" },
+      { khmer: "មួយម៉ឺន", pron: "믕먼", meaning: "10,000 (만)", type: "숫자" },
+      { khmer: "មួយសែន", pron: "믕싸엔", meaning: "100,000 (십만)", type: "숫자" },
+      { khmer: "មួយលាន", pron: "믕리언", meaning: "1,000,000 (백만)", type: "숫자" },
+      { khmer: "សណ្ឋាគារ", pron: "썬타끼어", meaning: "호텔", type: "호텔" },
+      { khmer: "បន្ទប់", pron: "번뚝", meaning: "방 (호실)", type: "호텔" },
+      { khmer: "កូនសោ", pron: "꼬온싸오", meaning: "방 열쇠", type: "호텔" },
+      { khmer: "កាតបន្ទប់", pron: "깟 번뚝", meaning: "카드키", type: "호텔" },
+      { khmer: "កន្សែង", pron: "껀싸엥", meaning: "수건", type: "호텔" },
+      { khmer: "ច្រាសដុសធ្មេញ", pron: "찌라 도 트멘", meaning: "칫솔", type: "호텔" },
+      { khmer: "ថ្នាំដុសធ្មេញ", pron: "크남 도 트멘", meaning: "치약", type: "호텔" },
+      { khmer: "សាប៊ូកក់សក់", pron: "싸부 꺽 쏙", meaning: "샴푸", type: "호텔" },
+      { khmer: "ភួយ", pron: "푸오이", meaning: "이불", type: "호텔" },
+      { khmer: "ខ្នើយ", pron: "크나오이", meaning: "베개", type: "호텔" },
+      { khmer: "ម៉ាស៊ីនត្រជាក់", pron: "마씬뜨러찌억", meaning: "에어컨", type: "호텔" },
+      { khmer: "ទូទឹកកក", pron: "뚜뜩꺼", meaning: "냉장고", type: "호텔" },
+      { khmer: "ទឹកក្តៅ", pron: "뜩끄다오", meaning: "온수", type: "호텔" },
+      { khmer: "លុយកក់", pron: "루이 꺽", meaning: "보증금", type: "호텔" },
+      { khmer: "នំ", pron: "놈", meaning: "과자 / 빵 / 간식", type: "음식" },
+      { khmer: "អាហារសម្រន់", pron: "아하 썸란", meaning: "간식 (공식 표기)", type: "음식" },
+      { khmer: "ចំណី", pron: "쩜너이", meaning: "군것질거리", type: "음식" },
+      { khmer: "ប្រហិត", pron: "쁘러헏", meaning: "어묵/미트볼 튀김", type: "음식" },
+      { khmer: "ការ៉េម", pron: "까렘", meaning: "아이스크림", type: "음식" },
+      { khmer: "ទឹកកក", pron: "뜩꺼", meaning: "얼음", type: "음식" },
+      { khmer: "ស្ករ", pron: "스꺼", meaning: "설탕", type: "음식" },
+      { khmer: "អំបិល", pron: "엄벌", meaning: "소금", type: "음식" },
+      { khmer: "ទឹកត្រី", pron: "뜩뜨러이", meaning: "피시소스", type: "음식" },
+      { khmer: "គុយទាវ", pron: "꾸이띠우", meaning: "쌀국수", type: "음식" },
+      { khmer: "មីឆា", pron: "미차", meaning: "볶음면", type: "음식" },
+      { khmer: "បាយឆា", pron: "바이차", meaning: "볶음밥", type: "음식" },
+      { khmer: "បាយស", pron: "바이써", meaning: "흰쌀밥", type: "음식" },
+      { khmer: "ស៊ុប", pron: "쏩", meaning: "수프 / 찌개", type: "음식" },
+      { khmer: "សាច់មាន់", pron: "쌋모안", meaning: "닭고기", type: "음식" },
+      { khmer: "សាច់ជ្រូក", pron: "쌋찌룩", meaning: "돼지고기", type: "음식" },
+      { khmer: "សាច់គោ", pron: "쌋꼬", meaning: "소고기", type: "음식" },
+      { khmer: "ពងមាន់", pron: "뽕모안", meaning: "계란", type: "음식" },
+      { khmer: "ត្រី", pron: "뜨러이", meaning: "생선", type: "음식" },
+      { khmer: "បង្គា", pron: "벙기어", meaning: "새우", type: "음식" },
+      { khmer: "មឹក", pron: "먹", meaning: "오징어", type: "음식" },
+      { khmer: "ស្លាបព្រា", pron: "슬랍쁘리어", meaning: "숟가락", type: "음식" },
+      { khmer: "ចង្កឹះ", pron: "쩡꺼", meaning: "젓가락", type: "음식" },
+      { khmer: "សម", pron: "써옴", meaning: "포크", type: "음식" },
+      { khmer: "កែវ", pron: "까에우", meaning: "컵", type: "음식" },
+      { khmer: "ចាន", pron: "짜안", meaning: "접시 / 그릇", type: "음식" },
+      { khmer: "កាហ្វេ", pron: "카페", meaning: "커피", type: "음식" },
+      { khmer: "ស្រាបៀរ", pron: "스라비어", meaning: "맥주", type: "음식" },
+      { khmer: "ស្វាយ", pron: "스와이", meaning: "망고", type: "과일" },
+      { khmer: "ចេក", pron: "쩩", meaning: "바나나", type: "과일" },
+      { khmer: "ដូង", pron: "동", meaning: "코코넛", type: "과일" },
+      { khmer: "ឪឡឹក", pron: "어을럭", meaning: "수박", type: "과일" },
+      { khmer: "ទុរេន", pron: "투렌", meaning: "두리안", type: "과일" },
+      { khmer: "កង់បី", pron: "껑바이", meaning: "뚝뚝이", type: "교통" },
+      { khmer: "ម៉ូតូឌុប", pron: "모토돕", meaning: "오토바이 택시", type: "교통" },
+      { khmer: "ព្រលានយន្តហោះ", pron: "쁘롤리언 욘하어", meaning: "공항", type: "교통" },
+      { khmer: "ភ្លើងស្តុប", pron: "플릉스똡", meaning: "신호등", type: "교통" },
+      { khmer: "ឈប់ទីនេះ", pron: "촛 띠니", meaning: "여기서 세워주세요", type: "교통" },
+      { khmer: "ថ្លៃប៉ុន្មាន", pron: "틀라이 뽄만", meaning: "얼마예요?", type: "쇼핑" },
+      { khmer: "លុយអាប់", pron: "루이 압", meaning: "거스름돈", type: "쇼핑" },
+      { khmer: "វិក្កយបត្រ", pron: "윅까이욥빧", meaning: "영수증", type: "쇼핑" },
+      { khmer: "ថង់", pron: "텅", meaning: "비닐봉지", type: "쇼핑" },
+      { khmer: "ក្បាល", pron: "끄발", meaning: "머리", type: "신체" },
+      { khmer: "មុខ", pron: "목", meaning: "얼굴", type: "신체" },
+      { khmer: "ភ្នែក", pron: "프나엑", meaning: "눈", type: "신체" },
+      { khmer: "ច្រមុះ", pron: "츠러모", meaning: "코", type: "신체" },
+      { khmer: "មាត់", pron: "모앗", meaning: "입", type: "신체" },
+      { khmer: "ត្រចៀក", pron: "뜨러찌억", meaning: "귀", type: "신체" },
+      { khmer: "ធ្មេញ", pron: "트멘", meaning: "치아 / 이", type: "신체" },
+      { khmer: "ក", pron: "꺼", meaning: "목", type: "신체" },
+      { khmer: "ស្មា", pron: "스마", meaning: "어깨", type: "신체" },
+      { khmer: "ដៃ", pron: "다이", meaning: "손 / 팔", type: "신체" },
+      { khmer: "ជើង", pron: "쯩", meaning: "발 / 다리", type: "신체" },
+      { khmer: "ពោះ", pron: "뿌어", meaning: "배 (복부)", type: "신체" },
+      { khmer: "ខ្នង", pron: "크넝", meaning: "등", type: "신체" },
+      { khmer: "ស្បែក", pron: "스바엑", meaning: "피부", type: "신체" },
+      { khmer: "ឪពុក", pron: "어으뽁", meaning: "아버지", type: "가족" },
+      { khmer: "ម្តាយ", pron: "엠다이", meaning: "어머니", type: "가족" },
+      { khmer: "បង", pron: "봉", meaning: "형 / 오빠 / 누나 / 언니", type: "가족" },
+      { khmer: "ប្អូន", pron: "뿌온", meaning: "동생", type: "가족" },
+      { khmer: "កូន", pron: "꼬온", meaning: "자식", type: "가족" },
+      { khmer: "ប្តី", pron: "프다이", meaning: "남편", type: "가족" },
+      { khmer: "ប្រពន្ធ", pron: "쁘러뽄", meaning: "아내", type: "가족" },
+      { khmer: "មិត្តភក្តិ", pron: "믓펵", meaning: "친구", type: "인물" },
+      { khmer: "ថៅកែ", pron: "타으까에", meaning: "사장님", type: "인물" },
+      { khmer: "បុគ្គលិក", pron: "복꼬릭", meaning: "직원", type: "인물" },
+      { khmer: "គ្រូពេទ្យ", pron: "끄루뻭", meaning: "의사", type: "인물" },
+      { khmer: "ប៉ូលីស", pron: "뽈리", meaning: "경찰", type: "인물" },
+      { khmer: "មេឃ", pron: "메익", meaning: "하늘", type: "자연" },
+      { khmer: "ភ្លៀង", pron: "플리엉", meaning: "비", type: "자연" },
+      { khmer: "ខ្យល់", pron: "킐", meaning: "바람", type: "자연" },
+      { khmer: "ទន្លេ", pron: "똔레", meaning: "강", type: "자연" },
+      { khmer: "សមុទ្រ", pron: "싸못", meaning: "바다", type: "자연" },
+      { khmer: "ភ្នំ", pron: "프놈", meaning: "산", type: "자연" },
+      { khmer: "ដើមឈើ", pron: "다엄츠", meaning: "나무", type: "자연" },
+      { khmer: "ផ្កា", pron: "프까", meaning: "꽃", type: "자연" },
+      { khmer: "ឆ្កែ", pron: "츠까에", meaning: "개", type: "동물" },
+      { khmer: "ឆ្មា", pron: "츠마", meaning: "고양이", type: "동물" },
+      { khmer: "គោ", pron: "꼬", meaning: "소", type: "동물" },
+      { khmer: "សួស្តី", pron: "쑤어싸데이", meaning: "안녕하세요", type: "회화" },
+      { khmer: "លាហើយ", pron: "리어 하어이", meaning: "안녕히 가세요", type: "회화" },
+      { khmer: "បាទ", pron: "빧", meaning: "네 (남성)", type: "회화" },
+      { khmer: "ចាស", pron: "짜아", meaning: "네 (여성)", type: "회화" },
+      { khmer: "ទេ", pron: "떼", meaning: "아니오", type: "회화" },
+      { khmer: "អត់", pron: "엇", meaning: "안 / 없다", type: "회화" },
+      { khmer: "ជួយផង", pron: "쭈오이퐁", meaning: "도와주세요!", type: "회화" },
+      { khmer: "វ៉ាយហ្វាយ", pron: "와이파이", meaning: "와이파이", type: "생활" },
+      { khmer: "លេខសម្ងាត់", pron: "레익 썸꽛", meaning: "비밀번호", type: "생활" },
+      { khmer: "លិខិតឆ្លងដែន", pron: "레킫 츨랑다엔", meaning: "여권", type: "생활" }
+    ];
+
+    /* ==========================================================================
+       ★ 퀴즈 생성
+       ========================================================================== */
+    function build1000QuestionBank() {
+      const bank = [];
+      let i = 0;
+      while (bank.length < 1000) {
+        const item = RAW_VOCAB[i % RAW_VOCAB.length];
+        bank.push({
+          khmer: item.khmer,
+          pron: item.pron,
+          meaning: item.meaning,
+          type: item.type
+        });
+        i++;
+      }
+      return bank;
+    }
+
+    const VOCAB_DATABASE = build1000QuestionBank();
+
+    // 단어장 대사전 (중복 없이 750+단어 등록)
+    const MASTER_DICTIONARY = (() => {
+      const map = new Map();
+      [...EXTRA_DICTIONARY_WORDS, ...RAW_VOCAB].forEach(item => {
+        if (!map.has(item.khmer)) {
+          map.set(item.khmer, item);
+        }
+      });
+      return Array.from(map.values());
+    })();
+
+    /* ==========================================================================
+       2. Web Audio API 사운드 시스템 (iOS 완벽 대응)
+       ========================================================================== */
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx || audioCtx.state === 'closed') {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended' || audioCtx.state === 'interrupted') {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    function unlockAudio() {
+      const ctx = getAudioContext();
+      if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
+        ctx.resume().catch(() => {});
+      }
+    }
+
+    async function playSuccessFx() {
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+          await ctx.resume();
+        }
+        const now = ctx.currentTime + 0.02;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.07);
+
+          gain.gain.setValueAtTime(0.001, now + idx * 0.07);
+          gain.gain.linearRampToValueAtTime(0.24, now + idx * 0.07 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.07 + 0.35);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now + idx * 0.07);
+          osc.stop(now + idx * 0.07 + 0.38);
+        });
+      } catch (e) {
+        console.warn("Audio error:", e);
+      }
+    }
+
+    async function playFailFx() {
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+          await ctx.resume();
+        }
+        const now = ctx.currentTime + 0.02;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.32);
+
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.36);
+      } catch (e) {
+        console.warn("Audio error:", e);
+      }
+    }
+
+    // 💖 생명 회복 보너스 사운드
+    async function playLifeBonusFx() {
+      try {
+        const ctx = getAudioContext();
+        if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+          await ctx.resume();
+        }
+        const now = ctx.currentTime + 0.02;
+        const notes = [587.33, 739.99, 880.00, 1174.66];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+          gain.gain.setValueAtTime(0.001, now + idx * 0.08);
+          gain.gain.linearRampToValueAtTime(0.26, now + idx * 0.08 + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.08);
+          osc.stop(now + idx * 0.08 + 0.42);
+        });
+      } catch (e) {}
+    }
+
+    /* ==========================================================================
+       3. 폭죽 파티클
+       ========================================================================= */
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function fireConfetti() {
+      const colors = ['#f59e0b', '#10b981', '#6366f1', '#ec4899', '#3b82f6', '#fbbf24', '#ffffff'];
+      for (let i = 0; i < 75; i++) {
+        confettiParticles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 80,
+          y: canvas.height * 0.45,
+          vx: (Math.random() - 0.5) * 14,
+          vy: Math.random() * -12 - 5,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1,
+          decay: Math.random() * 0.015 + 0.012
+        });
+      }
+
+      if (!confettiAnimationId) {
+        renderConfetti();
+      }
+    }
+
+    function renderConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.38;
+        p.vx *= 0.98;
+        p.rotation += p.rotSpeed;
+        p.opacity -= p.decay;
+
+        if (p.opacity <= 0 || p.y > canvas.height) {
+          confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.7);
+        ctx.restore();
+      }
+
+      if (confettiParticles.length > 0) {
+        confettiAnimationId = requestAnimationFrame(renderConfetti);
+      } else {
+        cancelAnimationFrame(confettiAnimationId);
+        confettiAnimationId = null;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    /* ==========================================================================
+       4. 게이미피케이션 (명예의 전당) & 생명
+       ========================================================================== */
+    const MAX_LIVES = 3;
+    let currentLives = 3;
+
+    const BADGES = [
+      { id: 'streak_10', icon: '🥉', title: '브론즈', desc: '10회 연속 정답 달성' },
+      { id: 'streak_20', icon: '🥈', title: '실버', desc: '20회 연속 정답 달성' },
+      { id: 'streak_30', icon: '🥇', title: '골드', desc: '30회 연속 정답 달성' },
+      { id: 'streak_40', icon: '💎', title: '다이아몬드', desc: '40회 연속 정답 달성' },
+      { id: 'streak_50', icon: '👑', title: '크메르 지존', desc: '50회 연속 정답 달성' },
+      { id: 'acc_almost', icon: '🏹', title: '거의 백발백중', desc: '20문제 이상 풀이 & 정답률 90% 이상' },
+      { id: 'acc_master', icon: '🎯', title: '전설의 백발백중', desc: '100문제 이상 풀이 & 정답률 90% 이상 달성' },
+      { id: 'solved_100', icon: '📚', title: '100문제 돌파', desc: '누적 100문제 풀이 완료' }
+    ];
+
+    let userStats = {
+      bestCombo: 0,
+      unlockedBadges: []
+    };
+
+    function updateLivesUI() {
+      let hearts = '';
+      for (let i = 0; i < MAX_LIVES; i++) {
+        hearts += (i < currentLives) ? '❤️' : '🖤';
+      }
+      document.getElementById('statLives').textContent = hearts;
+    }
+
+    function loadGameStats() {
+      try {
+        const s = localStorage.getItem('khmer_quiz_user_stats');
+        if (s) userStats = JSON.parse(s);
+      } catch (e) {}
+      document.getElementById('statBestCombo').textContent = userStats.bestCombo || 0;
+      document.getElementById('hallBestRecord').textContent = `${userStats.bestCombo || 0}회`;
+    }
+
+    function saveGameStats() {
+      try {
+        localStorage.setItem('khmer_quiz_user_stats', JSON.stringify(userStats));
+      } catch (e) {}
+      document.getElementById('statBestCombo').textContent = userStats.bestCombo;
+      document.getElementById('hallBestRecord').textContent = `${userStats.bestCombo}회`;
+    }
+
+    function checkAchievements(currentCombo, totalSolved, totalCorrect) {
+      let isNewBadge = false;
+
+      if (currentCombo > (userStats.bestCombo || 0)) {
+        userStats.bestCombo = currentCombo;
+        saveGameStats();
+        if ([10, 20, 30, 40, 50].includes(currentCombo)) {
+          showToast(`🏆 최고 연속 정답 신기록 갱신! (${currentCombo}회 달성)`);
+        }
+      }
+
+      if (currentCombo >= 10 && !userStats.unlockedBadges.includes('streak_10')) {
+        userStats.unlockedBadges.push('streak_10'); isNewBadge = true;
+      }
+      if (currentCombo >= 20 && !userStats.unlockedBadges.includes('streak_20')) {
+        userStats.unlockedBadges.push('streak_20'); isNewBadge = true;
+      }
+      if (currentCombo >= 30 && !userStats.unlockedBadges.includes('streak_30')) {
+        userStats.unlockedBadges.push('streak_30'); isNewBadge = true;
+      }
+      if (currentCombo >= 40 && !userStats.unlockedBadges.includes('streak_40')) {
+        userStats.unlockedBadges.push('streak_40'); isNewBadge = true;
+      }
+      if (currentCombo >= 50 && !userStats.unlockedBadges.includes('streak_50')) {
+        userStats.unlockedBadges.push('streak_50'); isNewBadge = true;
+      }
+      if (totalSolved >= 20 && (totalCorrect / totalSolved) >= 0.9 && !userStats.unlockedBadges.includes('acc_almost')) {
+        userStats.unlockedBadges.push('acc_almost'); isNewBadge = true;
+      }
+      if (totalSolved >= 100 && (totalCorrect / totalSolved) >= 0.9 && !userStats.unlockedBadges.includes('acc_master')) {
+        userStats.unlockedBadges.push('acc_master'); isNewBadge = true;
+      }
+      if (totalSolved >= 100 && !userStats.unlockedBadges.includes('solved_100')) {
+        userStats.unlockedBadges.push('solved_100'); isNewBadge = true;
+      }
+
+      if (isNewBadge) {
+        saveGameStats();
+        showToast('🎖️ 새로운 칭호 뱃지를 획득했습니다! 명예의 전당을 확인하세요!');
+      }
+    }
+
+    function renderHallOfFame() {
+      document.getElementById('hallBestRecord').textContent = `${userStats.bestCombo || 0}회`;
+      const grid = document.getElementById('badgeGrid');
+      grid.innerHTML = '';
+
+      BADGES.forEach(b => {
+        const isUnlocked = userStats.unlockedBadges.includes(b.id);
+        const card = document.createElement('div');
+        card.className = `badge-card ${isUnlocked ? 'unlocked' : ''}`;
+        card.innerHTML = `
+          <div class="badge-icon">${b.icon}</div>
+          <div class="badge-info">
+            <span class="badge-title">${b.title} ${isUnlocked ? '✓' : '🔒'}</span>
+            <span class="badge-desc">${b.desc}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    /* ==========================================================================
+       5. 오디오 엔진
+       ========================================================================== */
+    let audioMode = 'khmer';
+    let currentAudioObj = null;
+
+    function showToast(text) {
+      const toast = document.getElementById('toastPopup');
+      document.getElementById('toastMsg').textContent = text;
+      toast.classList.add('show');
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function playGoogleKhmerAudio(text) {
+      return new Promise((resolve, reject) => {
+        if (currentAudioObj) {
+          currentAudioObj.pause();
+          currentAudioObj = null;
+        }
+        const encoded = encodeURIComponent(text);
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=km&q=${encoded}`;
+        const audio = new Audio(url);
+        currentAudioObj = audio;
+
+        const timer = setTimeout(() => {
+          audio.pause();
+          reject(new Error("Timeout"));
+        }, 3000);
+
+        audio.onplay = () => clearTimeout(timer);
+        audio.onended = () => resolve();
+        audio.onerror = (e) => { clearTimeout(timer); reject(e); };
+        audio.play().catch(err => { clearTimeout(timer); reject(err); });
+      });
+    }
+
+    function playKoreanSpeech(pronText) {
+      return new Promise((resolve) => {
+        if (!('speechSynthesis' in window)) return resolve();
+        window.speechSynthesis.cancel();
+        const clean = pronText.replace(/[\[\]\(\)\/]/g, ' ').trim();
+        const utt = new SpeechSynthesisUtterance(clean);
+        utt.lang = 'ko-KR';
+        utt.rate = 0.9;
+        utt.onend = () => resolve();
+        utt.onerror = () => resolve();
+        window.speechSynthesis.speak(utt);
+      });
+    }
+
+    async function playSmartSpeech(khmerText, pronText) {
+      showToast(`🔊 [${khmerText} : ${pronText}] 재생`);
+
+      if (audioMode === 'korean') {
+        await playKoreanSpeech(pronText);
+        return;
+      }
+
+      if (audioMode === 'both') {
+        try { await playGoogleKhmerAudio(khmerText); } catch (e) {}
+        await new Promise(r => setTimeout(r, 200));
+        await playKoreanSpeech(pronText);
+        return;
+      }
+
+      try {
+        await playGoogleKhmerAudio(khmerText);
+      } catch (err) {
+        showToast(`🗣️ 기기 음성 대체: [${pronText}]`);
+        await playKoreanSpeech(pronText);
+      }
+    }
+
+    /* ==========================================================================
+       6. 퀴즈 게임 엔진 & 생명 관리
+       ========================================================================== */
+    let currentMode = 'all'; 
+    let questionPool = [];
+    let currentIndex = 0;
+    let currentQuestion = null;
+    let isAnswered = false;
+
+    let solvedCount = 0;
+    let correctCount = 0;
+    let comboCount = 0;
+    let wrongList = [];
+
+    function loadSavedWrongs() {
+      try {
+        const saved = localStorage.getItem('khmer_quiz_wrongs');
+        if (saved) wrongList = JSON.parse(saved);
+      } catch (e) {}
+      updateWrongBadge();
+    }
+
+    function saveWrongs() {
+      try {
+        localStorage.setItem('khmer_quiz_wrongs', JSON.stringify(wrongList));
+      } catch (e) {}
+      updateWrongBadge();
+    }
+
+    function updateWrongBadge() {
+      document.getElementById('wrongCount').textContent = wrongList.length;
+    }
+
+    function initQuizPool() {
+      if (currentMode === 'all') {
+        questionPool = [...VOCAB_DATABASE];
+      } else if (currentMode === 'verb') {
+        questionPool = VOCAB_DATABASE.filter(v => v.type === '동사');
+      } else if (currentMode === 'adj') {
+        questionPool = VOCAB_DATABASE.filter(v => v.type === '형용사');
+      } else if (currentMode === 'wrong') {
+        if (wrongList.length === 0) {
+          alert('틀린 문제가 없습니다! 전체 모드에서 먼저 문제를 풀어보세요.');
+          setMode('all');
+          return;
+        }
+        questionPool = [...wrongList];
+      }
+
+      questionPool.sort(() => Math.random() - 0.5);
+      currentIndex = 0;
+      updateStats();
+      loadNextQuestion();
+    }
+
+    function loadNextQuestion() {
+      if (currentLives <= 0) return;
+
+      if (currentIndex >= questionPool.length) {
+        if (currentMode === 'wrong') {
+          alert('🎉 오답 복습을 모두 완료했습니다!');
+          setMode('all');
+          return;
+        } else {
+          alert('🏆 대단합니다! 1,000문제를 모두 완주하셨습니다!');
+          currentIndex = 0;
+          questionPool.sort(() => Math.random() - 0.5);
+        }
+      }
+
+      isAnswered = false;
+      const targetWord = questionPool[currentIndex];
+
+      const sameTypeVocab = RAW_VOCAB.filter(v => 
+        v.type === targetWord.type && v.meaning !== targetWord.meaning
+      );
+      
+      const shuffledDistractors = sameTypeVocab.sort(() => Math.random() - 0.5);
+      const chosenDistractors = shuffledDistractors.slice(0, 3);
+      const options = [targetWord, ...chosenDistractors].sort(() => Math.random() - 0.5);
+
+      currentQuestion = { target: targetWord, options: options };
+      renderQuestionCard();
+    }
+
+    function renderQuestionCard() {
+      const q = currentQuestion;
+
+      document.getElementById('badgeCategory').textContent = `${q.target.type} (${q.target.type === '동사' ? 'Verb' : 'Adjective'})`;
+      document.getElementById('displayKhmer').textContent = q.target.khmer;
+      document.getElementById('displayPron').textContent = `[${q.target.pron}]`;
+
+      document.getElementById('btnMainSpeak').onclick = () => {
+        playSmartSpeech(q.target.khmer, q.target.pron);
+      };
+
+      document.getElementById('feedbackBar').style.display = 'none';
+
+      const container = document.getElementById('optionsContainer');
+      container.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'option-btn';
+        btn.id = `optBtn_${idx}`;
+
+        btn.innerHTML = `
+          <div class="option-main-row">
+            <div class="option-left">
+              <span class="option-num">${idx + 1}</span>
+              <span class="option-meaning">${opt.meaning}</span>
+            </div>
+            <span class="option-status-badge" id="optBadge_${idx}"></span>
+          </div>
+
+          <div class="option-revealed-area" id="revArea_${idx}">
+            <div class="revealed-content">
+              <div class="rev-word-group">
+                <span class="rev-khmer khmer-font">${opt.khmer}</span>
+                <span class="rev-pron">[${opt.pron}]</span>
+              </div>
+              <button class="btn-opt-tts" id="btnTts_${idx}">
+                🔊 발음 듣기
+              </button>
+            </div>
+          </div>
+        `;
+
+        btn.onclick = async () => {
+          unlockAudio();
+          if (!isAnswered && currentLives > 0) checkAnswer(idx, opt);
+        };
+
+        setTimeout(() => {
+          const ttsBtn = document.getElementById(`btnTts_${idx}`);
+          if (ttsBtn) {
+            ttsBtn.onclick = (e) => {
+              e.stopPropagation();
+              playSmartSpeech(opt.khmer, opt.pron);
+            };
+          }
+        }, 0);
+
+        container.appendChild(btn);
+      });
+
+      updateStats();
+    }
+
+    function checkAnswer(chosenIndex, chosenOption) {
+      if (isAnswered || currentLives <= 0) return;
+      isAnswered = true;
+
+      solvedCount++;
+      const isCorrect = (chosenOption.meaning === currentQuestion.target.meaning);
+      const card = document.getElementById('quizCard');
+
+      if (isCorrect) {
+        correctCount++;
+        comboCount++;
+        wrongList = wrongList.filter(w => w.khmer !== currentQuestion.target.khmer);
+        saveWrongs();
+
+        playSuccessFx();
+        fireConfetti();
+
+        // 20연속 정답 시 생명 회복 (+1 ❤️)
+        if (comboCount > 0 && comboCount % 20 === 0) {
+          if (currentLives < MAX_LIVES) {
+            currentLives++;
+            updateLivesUI();
+            playLifeBonusFx();
+            showToast(`💖 ${comboCount}연속 정답 보너스! 생명 1개 회복 (+1 ❤️)`);
+          } else {
+            showToast(`💖 ${comboCount}연속 정답 달성! 생명이 이미 가득 찼습니다!`);
+          }
+        }
+
+        checkAchievements(comboCount, solvedCount, correctCount);
+      } else {
+        comboCount = 0;
+        currentLives--;
+        updateLivesUI();
+
+        if (!wrongList.some(w => w.khmer === currentQuestion.target.khmer)) {
+          wrongList.push(currentQuestion.target);
+          saveWrongs();
+        }
+
+        playFailFx();
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        setTimeout(() => card.classList.remove('shake'), 500);
+
+        if (currentLives <= 0) {
+          setTimeout(() => {
+            document.getElementById('goScore').textContent = correctCount;
+            document.getElementById('goCombo').textContent = userStats.bestCombo || 0;
+            document.getElementById('gameOverModal').classList.add('open');
+          }, 600);
+        }
+      }
+
+      currentQuestion.options.forEach((opt, idx) => {
+        const btn = document.getElementById(`optBtn_${idx}`);
+        const badge = document.getElementById(`optBadge_${idx}`);
+        const revArea = document.getElementById(`revArea_${idx}`);
+
+        btn.classList.add('locked');
+        revArea.style.display = 'block';
+
+        if (opt.meaning === currentQuestion.target.meaning) {
+          btn.classList.add('correct');
+          badge.textContent = '✓ 정답';
+        } else if (idx === chosenIndex) {
+          btn.classList.add('wrong-chosen');
+          badge.textContent = '✗ 내가 고른 답';
+        } else {
+          btn.classList.add('distractor');
+        }
+      });
+
+      const feedbackBar = document.getElementById('feedbackBar');
+      const feedbackTitle = document.getElementById('feedbackTitle');
+
+      if (isCorrect) {
+        feedbackTitle.innerHTML = `<span style="color:var(--success);">🎉 정답입니다! (연속 ${comboCount}회 달성 🔥)</span>`;
+      } else {
+        feedbackTitle.innerHTML = `<span style="color:var(--danger);">😢 아쉽습니다! 정답은 [${currentQuestion.target.meaning}] 입니다.</span>`;
+      }
+
+      feedbackBar.style.display = 'flex';
+      updateStats();
+    }
+
+    function goNext() {
+      if (currentLives <= 0) return;
+      currentIndex++;
+      loadNextQuestion();
+    }
+
+    // 실시간 정답률 계산 및 표시
+    function updateStats() {
+      document.getElementById('statCurrent').textContent = Math.min(currentIndex + 1, questionPool.length);
+      document.getElementById('statTotal').textContent = questionPool.length;
+      document.getElementById('statSolved').textContent = solvedCount;
+      document.getElementById('statCorrect').textContent = correctCount;
+      document.getElementById('statCombo').textContent = comboCount;
+
+      const rate = solvedCount > 0 ? Math.round((correctCount / solvedCount) * 100) : 0;
+      const rateEl = document.getElementById('statRate');
+      if (rateEl) {
+        rateEl.textContent = `${rate}%`;
+        rateEl.className = `stat-val ${rate >= 90 ? 'gold' : rate >= 70 ? 'green' : ''}`;
+      }
+
+      const progressPercent = questionPool.length > 0 ? ((currentIndex) / questionPool.length) * 100 : 0;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      initQuizPool();
+    }
+
+    function restartGame() {
+      unlockAudio();
+      currentLives = MAX_LIVES;
+      updateLivesUI();
+      solvedCount = 0;
+      correctCount = 0;
+      comboCount = 0;
+      document.getElementById('gameOverModal').classList.remove('open');
+      initQuizPool();
+      showToast('💖 생명이 3개로 완충되었습니다! 힘내세요!');
+    }
+
+    /* ==========================================================================
+       7. 대사전 검색 엔진
+       ========================================================================== */
+    function normalizeSearchKey(str) {
+      if (!str) return '';
+      return str.toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/[\[\]\(\)\/]/g, '')
+        .replace(/빽/g, '뻭')
+        .replace(/빼/g, '뻬')
+        .replace(/애/g, '에')
+        .replace(/개/g, '게')
+        .replace(/배/g, '베')
+        .replace(/새/g, '세')
+        .replace(/재/g, '제')
+        .replace(/채/g, '체')
+        .replace(/태/g, '테')
+        .replace(/패/g, '페')
+        .replace(/쓰/g, '스')
+        .replace(/뜨/g, '트')
+        .replace(/끄/g, '크')
+        .replace(/호웁/g, '홉');
+    }
+
+    function renderVocabList(rawQuery = '') {
+      const container = document.getElementById('vocabList');
+      container.innerHTML = '';
+
+      const query = rawQuery.trim();
+      const normQuery = normalizeSearchKey(query);
+
+      let filtered = [];
+
+      if (!query) {
+        filtered = MASTER_DICTIONARY.slice(0, 80);
+      } else {
+        filtered = MASTER_DICTIONARY.filter(item => {
+          const itemKhmer = item.khmer;
+          const itemPronNorm = normalizeSearchKey(item.pron);
+          const itemMeanNorm = normalizeSearchKey(item.meaning);
+          const itemTypeNorm = normalizeSearchKey(item.type);
+
+          if (itemKhmer.includes(query)) return true;
+          if (itemPronNorm.includes(normQuery)) return true;
+          if (itemMeanNorm.includes(normQuery)) return true;
+          if (itemTypeNorm.includes(normQuery)) return true;
+
+          return false;
+        });
+      }
+
+      if (filtered.length === 0 && query) {
+        const isKhmer = /[\u1780-\u17FF]/.test(query);
+        const sl = isKhmer ? 'km' : 'ko';
+        const tl = isKhmer ? 'ko' : 'km';
+        const googleUrl = `https://translate.google.com/?sl=${sl}&tl=${tl}&text=${encodeURIComponent(query)}&op=translate`;
+
+        container.innerHTML = `
+          <div class="google-live-card">
+            <div style="font-size: 0.95rem; font-weight: 700;">내장 사전에 없는 단어입니다</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">구글 실시간 번역에서 바로 확인하세요:</div>
+            <a href="${googleUrl}" target="_blank" class="btn-google-translate">
+              🌐 구글 번역기에서 "${query}" 검색하기 ➔
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'vocab-row';
+
+        let typeClass = 'type-badge';
+        if (item.type.includes('명사') || item.type.includes('음식') || item.type.includes('과일') || item.type.includes('숫자') || item.type.includes('호텔')) typeClass += ' type-noun';
+        else if (item.type.includes('동사')) typeClass += ' type-verb';
+        else if (item.type.includes('형용사')) typeClass += ' type-adj';
+        else typeClass += ' type-expr';
+
+        row.innerHTML = `
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="khmer-font" style="font-size:1.3rem; font-weight:700;">${item.khmer}</span>
+              <span style="color:var(--gold); font-size:0.95rem; font-weight:600;">[${item.pron}]</span>
+              <span class="${typeClass}">${item.type}</span>
+            </div>
+            <div style="font-size:0.95rem; color:#f1f5f9; margin-top:3px;">${item.meaning}</div>
+          </div>
+          <button class="btn-opt-tts" onclick="playSmartSpeech('${item.khmer}', '${item.pron}')">
+            🔊 듣기
+          </button>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function quickSearch(word) {
+      const input = document.getElementById('vocabSearch');
+      input.value = word;
+      renderVocabList(word);
+      input.focus();
+    }
+
+    /* ==========================================================================
+       8. 초기화 및 이벤트 리스너
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('totalDictCount').textContent = MASTER_DICTIONARY.length;
+      loadSavedWrongs();
+      loadGameStats();
+      updateLivesUI();
+      initQuizPool();
+
+      document.body.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
+      document.body.addEventListener('click', unlockAudio, { once: true });
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => setMode(btn.dataset.mode);
+      });
+
+      document.getElementById('btnNext').onclick = goNext;
+      document.getElementById('btnRestart').onclick = restartGame;
+
+      document.getElementById('btnAudioMode').onclick = () => {
+        if (audioMode === 'khmer') {
+          audioMode = 'korean';
+          document.getElementById('audioModeIcon').textContent = '🗣️';
+          document.getElementById('audioModeText').textContent = '한글 독음';
+          showToast('🗣️ 한글 독음 읽기 모드');
+        } else if (audioMode === 'korean') {
+          audioMode = 'both';
+          document.getElementById('audioModeIcon').textContent = '🔄';
+          document.getElementById('audioModeText').textContent = '연속 듣기';
+          showToast('🔄 원어 + 한글 독음 연속 재생');
+        } else {
+          audioMode = 'khmer';
+          document.getElementById('audioModeIcon').textContent = '🇰🇭';
+          document.getElementById('audioModeText').textContent = '원어 발음';
+          showToast('🇰🇭 원어 발음 모드');
+        }
+      };
+
+      const hallModal = document.getElementById('hallModal');
+      document.getElementById('btnOpenHall').onclick = () => {
+        renderHallOfFame();
+        hallModal.classList.add('open');
+      };
+      document.getElementById('btnCloseHall').onclick = () => hallModal.classList.remove('open');
+
+      const vocabModal = document.getElementById('vocabModal');
+      document.getElementById('btnOpenVocab').onclick = () => {
+        vocabModal.classList.add('open');
+        renderVocabList(document.getElementById('vocabSearch').value);
+      };
+      document.getElementById('btnCloseVocab').onclick = () => vocabModal.classList.remove('open');
+      document.getElementById('vocabSearch').oninput = (e) => renderVocabList(e.target.value);
+
+      window.addEventListener('keydown', (e) => {
+        if (vocabModal.classList.contains('open') || hallModal.classList.contains('open') || document.getElementById('gameOverModal').classList.contains('open')) return;
+
+        if (!isAnswered) {
+          if (['1', '2', '3', '4'].includes(e.key)) {
+            const idx = parseInt(e.key) - 1;
+            if (currentQuestion && currentQuestion.options[idx]) {
+              checkAnswer(idx, currentQuestion.options[idx]);
+            }
+          }
+        } else {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            goNext();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
